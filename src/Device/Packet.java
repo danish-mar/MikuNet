@@ -1,17 +1,21 @@
+package Device;
+
 public class Packet {
     String source;
     String destination;
 
     String data;
 
-    int packetSize = data.length() + source.length() + destination.length();
+    int packetSize;
 
-    int dataSize = data.length();
+    int dataSize;
 
     public Packet(String source, String destination, String data){
         this.source = source;
         this.destination = destination;
         this.data = data;
+        packetSize = data.length() + source.length() + destination.length();
+        dataSize = data.length();
     }
 
     public int getDataSize() {
