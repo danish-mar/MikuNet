@@ -54,7 +54,7 @@ public abstract class Device {
 
     public void receive(Packet packet){
         if(packet.getDestination() == this.macAddress){
-            memory = packet.getData() + "<-" + packet.source;
+            memory = packet.payload.getClass() + "<-" + packet.getHeader().getSource();
         }else{
             System.err.println("this Packet dosnt belong to " + getMacAddress() + " it belongs to " + packet.getDestination());
         }

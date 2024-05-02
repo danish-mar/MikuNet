@@ -31,7 +31,7 @@ public class Switch extends Device {
                 // Forward the packet to the connected device
                 connectedDevices[i].receive(packetMemory);
                 packetForwarded = true;
-                System.out.println("[" + this.name + "]" + " Packet Forwareded to " + packetMemory.source + " -> " + connectedDevices[i].name);
+                System.out.println("[" + this.name + "]" + " Packet Forwareded to " + packetMemory.getHeader().getSource() + " -> " + connectedDevices[i].name);
                 // Exit the loop after forwarding the packet to prevent forwarding to multiple devices
                 break;
             }

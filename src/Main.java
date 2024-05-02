@@ -13,7 +13,6 @@ public class Main {
         Switch switch0 = new Switch(0,"MainSwitch",4);
 
         switch0.connectDevice(com1,0);
-        switch0.disconnectDevice(0);
         switch0.connectDevice(com2, 1);
         switch0.connectDevice(com3,2);
         switch0.connectDevice(com4, 3);
