@@ -1,56 +1,46 @@
 package Device;
 
+import java.util.HashMap;
+
 public class Switch extends Device {
     private int noOfPorts;
-    private int consumedPorts;
-    private Packet packetMemory;
+    private HashMap<String, Device> macTable;
     private Device[] connectedDevices;
 
     public Switch(int deviceId, String deviceName, int noOfPorts) {
-        if(noOfPorts == 4 || noOfPorts == 8 || noOfPorts == 16 || noOfPorts == 32){
+        if (isValidPortCount(noOfPorts)) {
             this.noOfPorts = noOfPorts;
-            this.connectedDevices = new Device[noOfPorts];
             this.name = deviceName;
-        }else{
-            System.out.println("Invalid no of port");
+            this.macTable = new HashMap<>();
+            this.connectedDevices = new Device[noOfPorts];
+        } else {
+            System.out.println("Invalid number of ports.");
         }
     }
 
     @Override
     public void receive(Packet packet) {
-        this.packetMemory = packet;
-        forward();
-    }
+        String destinationMAC = packet.getDestination();
 
-    private void forward() {
-        boolean packetForwarded = false;
+        // Check if the destination MAC address is in the MAC table
+        if (macTable.containsKey(destinationMAC)) {
+            // Get the device associated with the destination MAC address
+            Device destinationDevice = macTable.get(destinationMAC);
 
-        for (int i = 0; i < consumedPorts; i++) {
-            // Check if the connected device's MAC address matches the destination MAC address of the packet
-            if (connectedDevices[i].getMacAddress().equals(packetMemory.getDestination())) {
-                // Forward the packet to the connected device
-                connectedDevices[i].receive(packetMemory);
-                packetForwarded = true;
-                System.out.println("[" + this.name + "]" + " Packet Forwareded to " + packetMemory.getHeader().getSource() + " -> " + connectedDevices[i].name);
-                // Exit the loop after forwarding the packet to prevent forwarding to multiple devices
-                break;
-            }
-        }
-
-        if (!packetForwarded) {
-            System.err.println("Packet is Dropped: Destination MAC address not found.");
-            packetMemory = null;
+            // Forward the packet to the destination device
+            destinationDevice.receive(packet);
+        } else {
+            System.err.println("Packet dropped: Destination MAC address not found.");
         }
     }
 
 
-    // Add method to connect a device to a port on the switch
     public void connectDevice(Device device, int port) {
         if (port >= 0 && port < noOfPorts) {
             if (connectedDevices[port] == null) {
                 connectedDevices[port] = device;
+                macTable.put(device.getMacAddress(), device);
                 device.connect(this);
-                consumedPorts++;
             } else {
                 System.out.println("Port " + port + " is already consumed.");
             }
@@ -59,14 +49,28 @@ public class Switch extends Device {
         }
     }
 
-    // Add method to disconnect a device from a port on the switch
     public void disconnectDevice(int port) {
         if (port >= 0 && port < noOfPorts) {
-            connectedDevices[port].disconnect();
-            connectedDevices[port] = null;
-            consumedPorts--;
+            Device device = connectedDevices[port];
+            if (device != null) {
+                device.disconnect();
+                macTable.remove(device.getMacAddress());
+                connectedDevices[port] = null;
+            }
         } else {
             System.out.println("Invalid port number.");
         }
+    }
+
+    public void showConnectedDevices() {
+        System.out.println("Connected devices:");
+        for (String macAddress : macTable.keySet()) {
+            Device device = macTable.get(macAddress);
+            System.out.println("MAC: " + macAddress + ", Device: " + device.name);
+        }
+    }
+
+    private boolean isValidPortCount(int noOfPorts) {
+        return noOfPorts == 4 || noOfPorts == 8 || noOfPorts == 16 || noOfPorts == 32;
     }
 }

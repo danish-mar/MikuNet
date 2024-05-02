@@ -7,12 +7,18 @@ class PacketHeader{
     String destination;
     int destinationPort;
 
+    String type;
+
     public String getDestination() {
         return destination;
     }
 
     public int getDestinationPort() {
         return destinationPort;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getSource() {
@@ -65,7 +71,6 @@ public class Packet {
     int dataSize;
 
     public Packet(String source, String destination, String data){
-        System.out.println("cat?");
         this.packetHeader = new PacketHeader(source, destination);
  
         //        this.packetHeader.source = source;

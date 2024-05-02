@@ -52,13 +52,23 @@ public abstract class Device {
         }
     }
 
-    public void receive(Packet packet){
-        if(packet.getDestination() == this.macAddress){
-            memory = packet.payload.getClass() + "<-" + packet.getHeader().getSource();
-        }else{
-            System.err.println("this Packet dosnt belong to " + getMacAddress() + " it belongs to " + packet.getDestination());
+//    public void receive(Packet packet){
+//        if(packet.getDestination() == this.macAddress){
+//            memory = packet.payload.getClass() + "<-" + packet.getHeader().getSource();
+//        }else{
+//            System.err.println("this Packet dosnt belong to " + getMacAddress() + " it belongs to " + packet.getDestination());
+//        }
+//    }
+
+    public void receive(Packet packet) {
+        if (packet.getDestination().equals(this.macAddress)) {
+            //memory = packet.getPayload() + " <- " + packet.getHeader().getSource();
+            memory = packet.getPayload().getData() + " <- " + packet.getHeader().getSource();
+        } else {
+            System.err.println("This packet doesn't belong to " + getMacAddress() + ". It belongs to " + packet.getDestination());
         }
     }
+
 
     public String getMemory() {
         return memory;
